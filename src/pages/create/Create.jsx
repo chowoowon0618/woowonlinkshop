@@ -1,192 +1,325 @@
-// src/pages/create/Create.jsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+const styles = {
+  container: {
+    maxWidth: 640,
+    margin: '96px auto 0',
+    padding: 20,
+    fontFamily: 'Noto Sans KR, sans-serif',
+    color: '#222',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontWeight: 700,
+    fontSize: 18,
+  },
+  addButton: {
+    fontSize: 16,
+    color: '#3E45EC',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: 700,
+  },
+  box: {
+    backgroundColor: '#f9faff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    position: 'relative',
+    boxSizing: 'border-box',
+    border: '#FAFAFB',
+  },
+  label: {
+    fontWeight: 600,
+    fontSize: 14,
+    marginBottom: 6,
+    display: 'block',
+  },
+  input: {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: 8,
+    border: '1px solid #ddd',
+    backgroundColor: '#f0f4ff',
+    fontSize: 14,
+    boxSizing: 'border-box',
+  },
+  fileInputWrapper: {
+    position: 'relative',
+    marginBottom: 12,
+  },
+  fileInput: {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: 8,
+    border: '1px solid #ddd',
+    backgroundColor: '#f0f4ff',
+    fontSize: 14,
+    boxSizing: 'border-box',
+  },
+  fileButton: {
+    position: 'absolute',
+    top: 31,
+    right: 12,
+    backgroundColor: '#FAFAFB',
+    color: '#3E45EC',
+    border: '1px solid #3E45EC',
+    borderRadius: 8,
+    padding: '6px 12px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    fontSize: 14,
+    lineHeight: '100%',
+    letterSpacing: '0',
+    fontFamily: 'Pretendard, sans-serif',
+    height: 31,
+    whiteSpace: 'nowrap',
+  },
+  submitButton: {
+    width: '100%',
+    padding: 14,
+    borderRadius: 20,
+    backgroundColor: '#999',
+    color: '#fff',
+    fontWeight: 600,
+    fontSize: 16,
+    border: 'none',
+    cursor: 'pointer',
+    marginTop: 30,
+  },
+};
 
 function Create() {
-  const navigate = useNavigate();
-
-  // 샵 기본 정보 상태
-  const [form, setForm] = useState({
-    name: '', // 가게 이름
-    userId: '', // 유저 ID (urlName)
-    password: '', // 비밀번호 (예시)
-    description: '', // 설명
-    imageUrl: '', // 샵 대표 이미지
-    link: '', // 샵 링크 URL
-  });
-
- // 상품 리스트 상태 (초기 빈 배열)
-  const [products, setProducts] = useState([
-    {
-      name: 'shoes',
-      price: 5000,
-      imageUrl: 'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/LinkShop/products/1749457397451/%C3%AC%C2%8B%C2%A0%C3%AB%C2%B0%C2%9C.jpg',
-    },
-    {
-      name: 'watch',
-      price: 15000,
-      imageUrl: 'https://sprint-fe-project.s3.ap-northeast-2.amazonaws.com/LinkShop/products/1749457397451/watch.jpg', // 예시 URL, 실제 URL로 교체 필요
-    }
+  const [mainProducts, setMainProducts] = useState([
+    { image: null, name: '', price: '' },
+    { image: null, name: '', price: '' },
   ]);
-  // 현재 입력 중인 상품 정보 상태 (비워두고 필요시 폼 추가 가능)
-  const [productInput, setProductInput] = useState({
+  const [shopInfo, setShopInfo] = useState({
+    image: null,
     name: '',
-    price: '',
-    imageUrl: '',
+    url: '',
+    userId: '',
+    password: '',
   });
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
+  const [isCreated, setIsCreated] = useState(false); // 생성 완료 여부
 
-  // 샵 기본 정보 입력 핸들러
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+  const addMainProduct = () => {
+    setMainProducts([...mainProducts, { image: null, name: '', price: '' }]);
   };
 
-  // 상품 입력 필드 핸들러
-  const handleProductChange = (e) => {
-    const { name, value } = e.target;
-    setProductInput(prev => ({ ...prev, [name]: value }));
+  const handleMainProductChange = (index, field, value) => {
+    const updated = [...mainProducts];
+    updated[index][field] = value;
+    setMainProducts(updated);
   };
 
-  // 상품 추가 버튼 클릭 시 실행 (필요하면 사용)
-  const addProduct = () => {
-    if (!productInput.name || !productInput.price || !productInput.imageUrl) {
-      alert('상품 이름, 가격, 이미지 URL을 모두 입력해주세요.');
-      return;
-    }
-    if (isNaN(productInput.price)) {
-      alert('가격은 숫자만 입력 가능합니다.');
-      return;
-    }
-
-    setProducts(prev => [...prev, {
-      name: productInput.name,
-      price: Number(productInput.price),
-      imageUrl: productInput.imageUrl,
-    }]);
-
-    setProductInput({ name: '', price: '', imageUrl: '' });
+  const handleShopInfoChange = (field, value) => {
+    setShopInfo(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 간단한 유효성 검사
-    const userIdRegex = /^[a-zA-Z0-9]{1,20}$/;
-    const passwordRegex = /^[a-zA-Z0-9]{6,}$/;
-    if (!userIdRegex.test(form.userId)) {
-      setError('유저 ID는 영문과 숫자만 가능하며 최대 20자입니다.');
-      return;
-    }
-    if (!passwordRegex.test(form.password)) {
-      setError('비밀번호는 영문+숫자 조합으로 6자 이상이어야 합니다.');
-      return;
-    }
-    if (products.length === 0) {
-      setError('최소 한 개 이상의 상품을 등록해야 합니다.');
+    // 돌아가기 상태면 뒤로가기 실행
+    if (isCreated) {
+      window.history.back();
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError(null);
 
-    const teamId = '16-조우원';
-    const apiUrl = `https://linkshop-api.vercel.app/${teamId}/linkshops`;
+    const submitData = {
+      shop: {
+        image: shopInfo.image,
+        name: shopInfo.name,
+        url: shopInfo.url,
+        userId: shopInfo.userId,
+        password: shopInfo.password,
+      },
+      products: mainProducts.map(p => ({
+        image: p.image,
+        name: p.name,
+        price: p.price,
+      })),
+    };
 
     try {
-      const res = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          shop: {
-            name: form.name,
-            description: form.description,
-            imageUrl: form.imageUrl,
-            urlName: form.userId,
-            shopUrl: form.link,
-          },
-          products: products,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || '등록 실패');
-      }
-
-      const data = await res.json();
+      // 서버 전송 시뮬레이션
+      await new Promise(resolve => setTimeout(resolve, 1000));
       alert('등록 완료!');
-      setForm({
-        name: '',
-        userId: '',
-        password: '',
-        description: '',
-        imageUrl: '',
-        link: '',
-      });
-      setProducts([]);
-      navigate(`/post/${data.id}`);
-    } catch (err) {
-      console.error('샵 등록 중 에러 발생:', err); // 개발자 콘솔에 자세한 에러 출력
-      setError(err.message);
+
+      // 완료 후 돌아가기 버튼으로 토글
+      setIsCreated(true);
+
+      // 상태 초기화는 원한다면 여기서 하거나 안 해도 됨
+      // setMainProducts([{ image: null, name: '', price: '' }, { image: null, name: '', price: '' }]);
+      // setShopInfo({ image: null, name: '', url: '', userId: '', password: '' });
+    } catch {
+      setError('등록 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>샵 및 상품 등록하기</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* 샵 기본 정보 입력 */}
-        {['userId', 'password', 'name', 'description', 'imageUrl', 'link'].map(field => (
-          <input
-            key={field}
-            type={field === 'password' ? 'password' : field === 'imageUrl' || field === 'link' ? 'url' : 'text'}
-            name={field}
-            placeholder={
-              field === 'userId' ? '유저 ID (영문+숫자, 20자 이내)' :
-              field === 'password' ? '비밀번호 (영문+숫자, 6자 이상)' :
-              field === 'name' ? '가게 이름' :
-              field === 'description' ? '설명' :
-              field === 'imageUrl' ? '이미지 URL' :
-              '링크 URL'
-            }
-            value={form[field]}
-            onChange={handleChange}
-            required
-          />
+    <div style={styles.container}>
+      <form onSubmit={handleSubmit}>
+        <div style={styles.header}>
+          <div style={styles.sectionTitle}>대표 상품</div>
+          <button type="button" style={styles.addButton} onClick={addMainProduct} disabled={isCreated}>
+            추가
+          </button>
+        </div>
+
+        {mainProducts.map((product, idx) => (
+          <div key={idx} style={styles.box}>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              id={`main-product-file-${idx}`}
+              disabled={isCreated}
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (file) handleMainProductChange(idx, 'image', file);
+              }}
+            />
+
+            <div style={styles.fileInputWrapper}>
+              <label style={styles.label}>상품 대표 이미지</label>
+              <input
+                type="text"
+                placeholder="상품 이미지를 첨부해주세요."
+                style={styles.fileInput}
+                readOnly
+                value={product.image ? product.image.name : ''}
+              />
+              <button
+                type="button"
+                style={styles.fileButton}
+                disabled={isCreated}
+                onClick={() => document.getElementById(`main-product-file-${idx}`)?.click()}
+              >
+                파일 첨부
+              </button>
+            </div>
+
+            <label style={styles.label}>상품 이름</label>
+            <input
+              type="text"
+              placeholder="상품 이름을 입력해 주세요."
+              style={styles.input}
+              value={product.name}
+              disabled={isCreated}
+              onChange={e => handleMainProductChange(idx, 'name', e.target.value)}
+            />
+
+            <label style={styles.label}>상품 가격</label>
+            <input
+              type="text"
+              placeholder="원화로 표기해 주세요."
+              style={styles.input}
+              value={product.price}
+              disabled={isCreated}
+              onChange={e => handleMainProductChange(idx, 'price', e.target.value)}
+            />
+          </div>
         ))}
 
-        {/* 상품 리스트 미리보기 */}
-        {products.length > 0 && (
-          <div>
-            <h3>등록할 상품 목록</h3>
-            <ul>
-              {products.map((p, i) => (
-                <li key={i} style={{ marginBottom: '12px' }}>
-                  <strong>{p.name}</strong> - {p.price.toLocaleString()}원
-                  <br />
-                  <img src={p.imageUrl} alt={p.name} style={{ width: '120px', marginTop: '4px', borderRadius: '8px' }} />
-                </li>
-              ))}
-            </ul>
+        <div style={{ marginTop: 30 }}>
+          <div style={styles.sectionTitle}>내 쇼핑몰</div>
+          <div style={styles.box}>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="shop-image-file"
+              disabled={isCreated}
+              onChange={e => {
+                const file = e.target.files?.[0];
+                if (file) handleShopInfoChange('image', file);
+              }}
+            />
+
+            <div style={styles.fileInputWrapper}>
+              <label style={styles.label}>상품 대표 이미지</label>
+              <input
+                type="text"
+                placeholder="상품 이미지를 첨부해주세요."
+                style={styles.fileInput}
+                readOnly
+                value={shopInfo.image ? shopInfo.image.name : ''}
+              />
+              <button
+                type="button"
+                style={styles.fileButton}
+                disabled={isCreated}
+                onClick={() => document.getElementById('shop-image-file')?.click()}
+              >
+                파일 첨부
+              </button>
+            </div>
+
+            <label style={styles.label}>이름</label>
+            <input
+              type="text"
+              placeholder="표시하고 싶은 이름을 적어 주세요"
+              style={styles.input}
+              value={shopInfo.name}
+              disabled={isCreated}
+              onChange={e => handleShopInfoChange('name', e.target.value)}
+            />
+
+            <label style={styles.label}>Url</label>
+            <input
+              type="text"
+              placeholder="Url을 입력해 주세요."
+              style={styles.input}
+              value={shopInfo.url}
+              disabled={isCreated}
+              onChange={e => handleShopInfoChange('url', e.target.value)}
+            />
+
+            <label style={styles.label}>유저 ID</label>
+            <input
+              type="text"
+              placeholder="유저 ID를 입력해 주세요."
+              style={styles.input}
+              value={shopInfo.userId}
+              disabled={isCreated}
+              onChange={e => handleShopInfoChange('userId', e.target.value)}
+            />
+
+            <label style={styles.label}>비밀번호</label>
+            <input
+              type="password"
+              placeholder="비밀번호를 입력해 주세요."
+              style={styles.input}
+              value={shopInfo.password}
+              disabled={isCreated}
+              onChange={e => handleShopInfoChange('password', e.target.value)}
+            />
           </div>
-        )}
+        </div>
 
-        {/* 필요하면 상품 추가 폼 및 버튼도 추가 가능 */}
-        {/* <button type="button" onClick={addProduct}>상품 추가</button> */}
-
-        <button type="submit" disabled={loading}>
-          {loading ? '등록 중...' : '등록하기'}
+        <button type="submit" style={styles.submitButton} disabled={loading}>
+          {loading ? '처리중...' : isCreated ? '돌아가기' : '생성하기'}
         </button>
 
-        {error && <p style={{ color: 'red', marginTop: '8px' }}>{error}</p>}
+        {error && <p style={{ color: 'red', marginTop: 12, textAlign: 'center' }}>{error}</p>}
       </form>
     </div>
   );
 }
 
 export default Create;
+

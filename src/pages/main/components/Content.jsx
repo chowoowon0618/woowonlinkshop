@@ -111,33 +111,24 @@ function Content() {
   });
 
   return (
-    <div style={{ padding: '40px 360px' }}>
-  {/* 검색창 */}
-  <div style={{ marginBottom: 16 }}>
-    <div
-      style={{
-        width: '1199px',
-        height: '55px',
-        borderRadius: '49px',
-        border: '1px solid #ddd',
-        position: 'relative',
-        backgroundColor: '#fff',
-      }}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          position: 'absolute',
-          left: 16,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          width: 20,
-          height: 20,
-          fill: '#999',
-          pointerEvents: 'none',
-        }}
-        viewBox="0 0 24 24"
-      >
+ <div style={{ padding: '40px 360px' }}>
+      {/* 검색창 */}
+      <div style={{ maxWidth: 600, margin: '0 auto 24px' }}>
+        <div style={{ position: 'relative', borderRadius: 24, border: '1px solid #ddd' }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              position: 'absolute',
+              left: 12,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: 16,
+              height: 16,
+              fill: '#999',
+              pointerEvents: 'none',
+            }}
+            viewBox="0 0 24 24"
+          >
         <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z" />
       </svg>
       <input
@@ -160,23 +151,44 @@ function Content() {
     </div>
   </div>
 
-      {/* 상세필터 버튼 */}
-      <div style={{ marginBottom: 32 }}>
-        <button
-          onClick={() => alert('상세필터 클릭!')}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#333',
-            cursor: 'pointer',
-            fontSize: 14,
-            padding: 0,
-            lineHeight: '21px',
-          }}
-        >
-          상세필터 ▼
-        </button>
-      </div>
+<div style={{ marginBottom: 32 }}>
+  <button
+    onClick={() => alert('상세필터 클릭!')}
+    style={{
+      background: 'none',
+      border: 'none',
+      color: '#14151A',
+      cursor: 'pointer',
+      fontSize: '18px',
+      padding: 0,
+      lineHeight: '100%',
+      letterSpacing: '0%',
+      fontWeight: 500,
+      fontFamily: 'Pretendard, sans-serif',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      whiteSpace: 'nowrap',        // 줄바꿈 방지
+      gap: '4px',                  // 아이콘과 글자 사이 간격
+      width: 'auto',               // 고정 너비 제거 (원하면 최소 너비로 바꿔도 돼)
+      height: '21px',
+    }}
+  >
+    상세필터
+    <span
+      style={{
+        fontSize: '12px',
+        width: '12px',
+        height: '12px',
+        display: 'inline-block',
+        lineHeight: '12px',
+      }}
+    >
+      ▼
+    </span>
+  </button>
+</div>
+
 
       {/* 카드 그리드 */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
