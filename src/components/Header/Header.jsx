@@ -60,7 +60,7 @@ function Header() {
           cursor: 'pointer',
         }}
       >
-        {isCreatePage ? '돌아가기' : '생성하기'}
+        {isCreatePage ? '뒤로가기' : '생성하기'}
       </button>
     </header>
   );

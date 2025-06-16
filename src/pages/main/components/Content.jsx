@@ -112,28 +112,39 @@ function Content() {
 
   return (
  <div style={{ padding: '40px 360px' }}>
-      {/* 검색창 */}
-      <div style={{ maxWidth: 600, margin: '0 auto 24px' }}>
-        <div style={{ position: 'relative', borderRadius: 24, border: '1px solid #ddd' }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            style={{
-              position: 'absolute',
-              left: 12,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 16,
-              height: 16,
-              fill: '#999',
-              pointerEvents: 'none',
-            }}
-            viewBox="0 0 24 24"
-          >
-        <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z" />
-      </svg>
+  {/* 검색창 */}
+<div style={{ 
+  width: 1199,                // 너비 1199px
+  height: 55,                 // 높이 55px
+  margin: '0 auto 24px',      // 중앙 정렬 및 아래쪽 여백
+  position: 'relative',       // 내부 요소 위치 기준
+}}>
+  <div style={{ 
+    position: 'relative', 
+    borderRadius: 49,         // 반경 49px
+    border: '1px solid #DDDCDF', // 테두리 1px solid #DDDCDF
+    height: '100%',           // 부모 높이 상속
+    width: '100%',            // 부모 너비 상속
+  }}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      style={{
+        position: 'absolute',
+        left: 12,
+        top: '50%',
+        transform: 'translateY(-50%)',
+        width: 16,
+        height: 16,
+        fill: '#999',
+        pointerEvents: 'none',
+      }}
+      viewBox="0 0 24 24"
+    >
+      <path d="M10 2a8 8 0 105.293 14.293l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z" />
+    </svg>
       <input
         type="search"
-        placeholder="제목으로 검색해 보세요."
+        placeholder="샵 이름으로 검색해 보세요."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{
@@ -256,3 +267,5 @@ function Content() {
 }
 
 export default Content;
+
+

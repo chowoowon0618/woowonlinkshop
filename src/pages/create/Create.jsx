@@ -312,7 +312,7 @@ function Create() {
         </div>
 
         <button type="submit" style={styles.submitButton} disabled={loading}>
-          {loading ? '처리중...' : isCreated ? '돌아가기' : '생성하기'}
+          {loading ? '처리중...' : isCreated ? '뒤로가기' : '생성하기'}
         </button>
 
         {error && <p style={{ color: 'red', marginTop: 12, textAlign: 'center' }}>{error}</p>}
@@ -322,4 +322,3 @@ function Create() {
 }
 
 export default Create;
-
